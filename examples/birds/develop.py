@@ -37,6 +37,9 @@ if __name__ == "__main__":
     p.add_argument("--processors",default=1,type=int,
             action="store", dest="nprocessors",
             help="Number of processors [1]")
+    p.add_argument("--max_depth",default=20,type=int,
+            action="store", dest="max_depth",
+            help="Maximum depth of random forest [20]")
     p.add_argument("-v", "--verbose",
             action="store_true", dest="verbose",
             help="Verbose mode [Off]")
@@ -60,14 +63,23 @@ if __name__ == "__main__":
     verbose("Total classes",le.classes_.shape[0])
     ids=le.transform(ids_)
 
+    from sklearn.utils import shuffle
+
+    feats,ids=shuffle(feats,ids)
+
     X_train, X_test, y_train, y_test=\
-        train_test_split(feats, ids, test_size=0.20, random_state=42) 
-    
+        train_test_split(feats, ids, test_size=0.20,
+        random_state=42) 
+   
+    verbose('Datos entrenamientp:',X_train.shape)
+    verbose('Etiquetas:',y_train.shape)
+    verbose('Datos prueva:',X_test.shape)
+
     verbose("Training")
     classifier=RandomForestClassifier(
             n_estimators=opts.estimators,
             n_jobs=opts.nprocessors,
-            max_depth=20,
+            max_depth=opts.max_depth,
             verbose=True)
 
     # Aprendiendo
@@ -83,4 +95,7 @@ if __name__ == "__main__":
     print( 'F-score               :', f1_score(y_test, prediction))
     print( '\nClasification report:\n', classification_report(y_test,
             prediction))
-    print( '\nConfussion matrix   :\n',confusion_matrix(y_test, prediction))
+    cm=confusion_matrix(y_test, prediction)
+    print( '\nConfussion matrix   :\n',cm)
+    for x in cm:
+        print(x)

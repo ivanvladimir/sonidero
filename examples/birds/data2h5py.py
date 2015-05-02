@@ -116,9 +116,9 @@ if __name__ == "__main__":
         gr=h5_file.create_group(label)
         for ix,label in enumerate(idmap):
             gr.attrs[label]=ix
-        dX=h5_file.create_dataset(os.path.join(label,"X"),(freqbins,0),dtype="float32",maxshape=(freqbins,None))
+        dX=gr.create_dataset("X",(freqbins,0),dtype="float32",maxshape=(freqbins,None))
         
-        dY=h5_file.create_dataset(os.path.join(label,"Y"),(nlabels,0),dtype="int32",maxshape=(nlabels,None))
+        dY=gr.create_dataset("Y",(nlabels,0),dtype="int32",maxshape=(nlabels,None))
 
         ix=0
         for label,wavfile in idds:
@@ -133,6 +133,8 @@ if __name__ == "__main__":
             # Saving X 
             # Info from size of file 
             nframes  = (len(audio)-framesize)//hopsize
+            if nframes < 44:
+                continue
             windoed  = np.zeros((nframes, framesize))
             ix=dX.shape
             # Resizing data
@@ -145,10 +147,9 @@ if __name__ == "__main__":
                 windoed[i,:] = audio[sup] * window
             
             # Extract espectrum
-            fft = np.fft.rfft(windoed).T
-            fft=np.abs(fft)**2
-            dX[ix[1]:ix[1]+nframes]=fft
-            h5_file.flush()
+            fft = np.fft.rfft(windoed)
+            fft=(np.abs(fft)**2).T
+            dX[:,ix[1]:ix[1]+nframes]=fft
 
             # Saving Y
             vlabel = np.zeros((nlabels,nframes))

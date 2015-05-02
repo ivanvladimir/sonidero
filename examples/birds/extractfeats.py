@@ -7,27 +7,6 @@
 # 2013/IIMAS/UNAM
 # ----------------------------------------------------------------------
 
-#!/usr/bin/env python
-# -*- coding: utf-8
-# ----------------------------------------------------------------------
-# Author ID main using a sparse representation
-# ----------------------------------------------------------------------
-# Ivan V. Meza
-# 2014/IIMAS, México
-# ----------------------------------------------------------------------
-# authorid.py is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# -------------------------------------------------------------------------
 from __future__ import print_function
 
 # System libraries
@@ -106,6 +85,10 @@ if __name__ == "__main__":
     p.add_argument("--processors",default=1,type=int,
             action="store", dest="nprocessors",
             help="Number of processors [1]")
+    p.add_argument("-n",default=None,type=int,
+            action="store", dest="total",
+            help="Number of files to analyse [all]")
+ 
     p.add_argument("-v", "--verbose",
             action="store_true", dest="verbose",
             help="Verbose mode [Off]")
@@ -130,6 +113,9 @@ if __name__ == "__main__":
         args=[ (os.path.join(root,file),opts.WAVDIR,opts.OUTDIR) 
                 for file in files
                     if file.endswith('.xml')]
+        if opts.total:
+            args=args[:opts.total]
+
         verbose('Processing',len(args),'files from',root)
         if opts.nprocessors > 1:
             idds=pool.map(process_file_,args)

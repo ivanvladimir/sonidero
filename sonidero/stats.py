@@ -21,7 +21,8 @@ from scipy.stats import scoreatpercentile, skew, kurtosis
 class StatsCalculator:
     def __init__(self,stats=['mean']):
         self.stats=['mean']
-        self._stats=['mean','std','median','q1','q2','q3','skew','kustosis','min','max']
+        #self._stats=['mean','std','median','q1','q2','q3','skew','kustosis','min','max']
+        self._stats=['mean','std','median','skew']
 
     def set(self,option):
         if option=='all':
