@@ -16,7 +16,7 @@ from sklearn.utils.extmath import fast_dot
 
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import train_test_split
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, f1_score
 from sklearn import preprocessing
 
@@ -76,10 +76,10 @@ if __name__ == "__main__":
     verbose('Datos prueva:',X_test.shape)
 
     verbose("Training")
-    classifier=RandomForestClassifier(
-            n_estimators=opts.estimators,
-            n_jobs=opts.nprocessors,
-            max_depth=opts.max_depth,
+    classifier=SVC(
+            kernel="rbf",
+            gamma=0.00001,
+            C=0.0001,
             verbose=True)
 
     # Aprendiendo
@@ -96,6 +96,6 @@ if __name__ == "__main__":
     print( '\nClasification report:\n', classification_report(y_test,
             prediction))
     cm=confusion_matrix(y_test, prediction)
-    print( '\nConfussion matrix   :\n',cm)
-    for x in cm:
-        print(x)
+    #print( '\nConfussion matrix   :\n',cm)
+    #for x in cm:
+    #    print(x)
