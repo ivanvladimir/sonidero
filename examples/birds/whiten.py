@@ -14,7 +14,7 @@ import argparse
 import sys
 import os
 from bs4 import BeautifulSoup
-from numpy import vstack, save,load
+from numpy import save,load
 from sklearn.decomposition import IncrementalPCA
 import pickle
 

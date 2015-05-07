@@ -15,9 +15,10 @@ import sys
 import os
 from bs4 import BeautifulSoup
 from multiprocessing import Pool
-from numpy import vstack, save
+from numpy import vstack, save,mean,std,log,amax
 from essentia.standard import *
 import scikits.audiolab as audiolab
+from sklearn import preprocessing
 
 
 # Local import
@@ -28,11 +29,12 @@ from sonidero.stats import StatsCalculator
 
 w = Windowing(type = 'hann')
 spectrum  = Spectrum()
-melbands  = MelBands(numberBands=40,inputSize=513)
-withening = SpectralWhitening()
-peaks     = SpectralPeaks(maxFrequency=22100)
+melbands  = MelBands(numberBands=80,inputSize=513, highFrequencyBound=16000)
+filterH   = HighPass(cutoffFrequency=1000)
 statcalculator = StatsCalculator()
 statcalculator.set('all')
+preEmph  = 0.95
+floor= 1e-100
 
 verbose = lambda *a: None
 
@@ -44,19 +46,23 @@ def extract_feats(xmlname,dirwave):
     verbose('Openning ',wavname)
     sound=audiolab.sndfile(wavname,'read')
     audio=sound.read_frames(sound.get_nframes())
+    audio=essentia.array(audio)
+    audio=filterH(audio)
     energies=[]
-    for frame in FrameGenerator(essentia.array(audio), frameSize = 1024, hopSize = 210):
-        fspectrum=spectrum(w(frame))
-        fpeaksF,fpeaksM=peaks(fspectrum)
-        withening(fspectrum,fpeaksF,fpeaksM)
+    for frame in FrameGenerator(audio, frameSize = 1024, hopSize = 512):
+        frame=w(frame)
+        frame[1:] -= frame[:-1] * preEmph
+        fspectrum=spectrum(frame)
+        fspectrum[fspectrum<floor]=floor
         band=melbands(fspectrum)
         energies.append(band)
     if birdinfo.classid:
         idd=birdinfo.classid.string
     else:
         idd='u'
-    return idd, vstack(energies)
-            
+    mat=vstack(energies)
+    mat=mat/amax(mat)
+    return idd,mat            
     
 def process_file(filename,wavdir,outdir):
     verbose('Extracting features from',filename)
