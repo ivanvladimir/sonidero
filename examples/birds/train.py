@@ -82,8 +82,7 @@ if __name__ == "__main__":
     # Aprendiendo
     classifier.fit(X_train, y_train)
 
-    stream_model = pickle.dumps(classifier)
-    verbose("Saving model to",opts.model)
-    with open(opts.model,"w") as modelf:
-        modelf.write(stream_model)
+    # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
+    with open(opts.model,'wb') as idxf:
+        pickle.dump(classifier, idxf, pickle.HIGHEST_PROTOCOL)
 
