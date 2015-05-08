@@ -12,14 +12,14 @@ from __future__ import print_function
 # System libraries
 import argparse
 import numpy as np
+from sklearn.utils.extmath import fast_dot
 
-from sklearn.externals import joblib
+from sklearn.metrics import accuracy_score
+from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, f1_score
 from sklearn import preprocessing
 
-import os.path
-import os
-import sys
 
 verbose = lambda *a,**k: None
 
@@ -29,17 +29,12 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser("Develop")
     p.add_argument("FEATS",
             action="store", help="Feats file")
-    p.add_argument("IDS",
-            action="store", help="IDs file")
     p.add_argument("--estimators",
         action="store", dest="estimators",default=100,type=int,
         help="Define el valor para n_estimators")
     p.add_argument("--processors",default=1,type=int,
             action="store", dest="nprocessors",
             help="Number of processors [1]")
-    p.add_argument("--model",default="model.data",type=str,
-            action="store", dest="model",
-            help="Maximum depth of random forest [model.dat]")
     p.add_argument("--max_depth",default=None,type=int,
             action="store", dest="max_depth",
             help="Maximum depth of random forest [20]")
@@ -59,44 +54,18 @@ if __name__ == "__main__":
     n=0
     verbose('Loading vectors')
     feats=np.load(opts.FEATS)
-    ids_=np.load(opts.IDS)
 
-    le = preprocessing.LabelEncoder()
-    le.fit(ids_)
-    verbose("Total classes",le.classes_.shape[0])
-    ids=le.transform(ids_)
-
-    verbose("Saving ids transformer")
-   
-
-    if not os.path.exists(opts.model):
-        os.mkdir(opts.model)
-    else:
-        if not os.path.isdir(opts.model):
-            print('Not a directory for model')
-            sys.exit(1)
-
-    joblib.dump(le, os.path.join(opts.model,"le.idx"))
-    
-
-    from sklearn.utils import shuffle
-
-    feats,ids=shuffle(feats,ids)
-
-    X_train, y_train=feats, ids
-   
-    verbose('Datos entrenamientp:',X_train.shape)
-    verbose('Etiquetas:',y_train.shape)
-
-    verbose("Training")
-    classifier=RandomForestClassifier(
-            n_estimators=opts.estimators,
-            n_jobs=opts.nprocessors,
-            max_depth=opts.max_depth,
-            verbose=True)
-
-    # Aprendiendo
-    classifier.fit(X_train, y_train)
-
-    # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
+    verbose('Loading label encoder')
+    le = joblib.load(le, os.path.join(opts.model,"le.idx"))
+    verbose('Loading model')
     joblib.dump(classifier, os.path.join(opts.model,"model"))
+
+  
+    X_test = feats
+
+    # Prediciendo
+    verbose("Prediction")
+    prediction = classifier.score(X_test)
+
+    verbose(prediction)
+
