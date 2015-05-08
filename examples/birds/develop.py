@@ -37,7 +37,7 @@ if __name__ == "__main__":
     p.add_argument("--processors",default=1,type=int,
             action="store", dest="nprocessors",
             help="Number of processors [1]")
-    p.add_argument("--max_depth",default=20,type=int,
+    p.add_argument("--max_depth",default=None,type=int,
             action="store", dest="max_depth",
             help="Maximum depth of random forest [20]")
     p.add_argument("-v", "--verbose",
@@ -96,6 +96,6 @@ if __name__ == "__main__":
     print( '\nClasification report:\n', classification_report(y_test,
             prediction))
     cm=confusion_matrix(y_test, prediction)
-    print( '\nConfussion matrix   :\n',cm)
-    for x in cm:
-        print(x)
+    #print( '\nConfussion matrix   :\n',cm)
+    #for x in cm:
+    #    print(x)

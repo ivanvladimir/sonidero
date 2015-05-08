@@ -12,8 +12,8 @@ from __future__ import print_function
 # System libraries
 import argparse
 import numpy as np
-import pickle
 
+from sklearn.externals import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import preprocessing
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     p.add_argument("--model",default="model.data",type=str,
             action="store", dest="model",
             help="Maximum depth of random forest [model.dat]")
-    p.add_argument("--max_depth",default=20,type=int,
+    p.add_argument("--max_depth",default=None,type=int,
             action="store", dest="max_depth",
             help="Maximum depth of random forest [20]")
     p.add_argument("-v", "--verbose",
@@ -83,6 +83,4 @@ if __name__ == "__main__":
     classifier.fit(X_train, y_train)
 
     # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
-    with open(opts.model,'wb') as idxf:
-        pickle.dump(classifier, idxf, pickle.HIGHEST_PROTOCOL)
-
+    joblib.dump(classifier, opts.model) 
