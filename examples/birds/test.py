@@ -31,6 +31,8 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser("Develop")
     p.add_argument("FEATS",
             action="store", help="Feats file")
+    p.add_argument("PROBS",
+            action="store", help="Problems id file")
     p.add_argument("--model",default="model.data",type=str,
             action="store", dest="model",
             help="Maximum depth of random forest [model.dat]")
@@ -56,6 +58,9 @@ if __name__ == "__main__":
     n=0
     verbose('Loading vectors')
     feats=np.load(opts.FEATS)
+    verbose('Loading problems')
+    probs=np.load(opts.PROBS)
+
 
     verbose('Loading label encoder')
     le = joblib.load(os.path.join(opts.model,"le.idx"))
@@ -69,11 +74,12 @@ if __name__ == "__main__":
     verbose("Prediction")
     prediction = classifier.predict_proba(X_test)
 
-    for row in prediction:
+    for pid,row in zip(probs,prediction):
+        pid=pid[2:]
         idxs=np.argsort(row)
         final=row[idxs[-5:]]
         label=le.inverse_transform(idxs[-5:])
-        for a,b in zip(label,final):
-            print(a,b)
+        for e,(a,b) in enumerate(zip(label,final)):
+            print(",".join([pid,a,str(e),str(b)]))
 
 
