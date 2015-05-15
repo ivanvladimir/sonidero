@@ -77,7 +77,7 @@ if __name__ == "__main__":
                 verbose('.',end="")
             n+=1
             ids.append(ids_[os.path.basename(filename)[:-4]])
-            bits=op.path.basename(filename)[:-4].split('_')
+            bits=os.path.basename(filename)[:-4].split('_')
             probs.append(bits[-1])
             row=load(os.path.join(root,filename))
             if first:
