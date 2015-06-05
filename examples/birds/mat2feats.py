@@ -33,24 +33,30 @@ def extract_feats(xmlname,dirmat):
     with open(xmlname) as xml_:
         birdinfo=BeautifulSoup(xml_.read())
     matname=os.path.join(dirmat,birdinfo.filename.string[:-4]+".npy")
-    verbose('Openning ',matname)
-    mat=load(matname)
+    if os.path.exists(matname):
+        verbose('Openning ',matname)
+        mat=load(matname)
+    else:
+        mat=None
     if birdinfo.classid:
         idd=birdinfo.classid.string
     else:
         idd='u'
     return idd, mat
-            
+                
     
 def process_file(filename,matdir,outdir):
     verbose('Extracting features from',filename)
     idd,feats=extract_feats(filename,matdir)
-    verbose('Identifier species',idd)
-    stats=statcalculator.calculate(feats)
-    name=os.path.basename(filename)
-    name=os.path.splitext(name)[0]
-    save(os.path.join(outdir,name),stats)
-    return (name,idd)
+    if not feats is None:
+        verbose('Identifier species',idd)
+        stats=statcalculator.calculate(feats)
+        name=os.path.basename(filename)
+        name=os.path.splitext(name)[0]
+        save(os.path.join(outdir,name),stats)
+        return (name,idd)
+    else:
+        return None
 
 def process_file_(args):
     return process_file(*args)
@@ -105,7 +111,7 @@ if __name__ == "__main__":
             idds=pool.map(process_file_,args)
         else:
             idds=map(process_file_,args)
-    save(os.path.join(opts.OUTDIR,'ids'),idds)
+    save(os.path.join(opts.OUTDIR,'ids'),[x for x in idds if x])
 
 
             

@@ -60,17 +60,22 @@ def extract_feats(xmlname,dirwave):
         idd=birdinfo.classid.string
     else:
         idd='u'
-    mat=vstack(energies)
-    mat=mat/amax(mat)
+    if len(energies)>0:
+        mat=vstack(energies)
+        mat=mat/amax(mat)
+    else:
+        mat=None
     return idd,mat            
     
 def process_file(filename,wavdir,outdir):
     verbose('Extracting features from',filename)
     idd,feats=extract_feats(filename,wavdir)
-    name=os.path.basename(filename)
-    name=os.path.splitext(name)[0]
-    save(os.path.join(outdir,name),feats)
-    return (name,idd)
+    if not feats is None:
+        name=os.path.basename(filename)
+        name=os.path.splitext(name)[0]
+        save(os.path.join(outdir,name),feats)
+        return (name,idd)
+    return None
 
 def process_file_(args):
     return process_file(*args)
@@ -125,7 +130,7 @@ if __name__ == "__main__":
             idds=pool.map(process_file_,args)
         else:
             idds=map(process_file_,args)
-    save(os.path.join(opts.OUTDIR,'ids'),idds)
+    save(os.path.join(opts.OUTDIR,'ids'),[x for x in idds if x])
 
 
             
