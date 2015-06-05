@@ -13,13 +13,15 @@ from __future__ import print_function
 import argparse
 import numpy as np
 from sklearn.utils.extmath import fast_dot
+import os.path
 
+from sklearn.externals import joblib
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, f1_score
 from sklearn import preprocessing
-
+import sys
 
 verbose = lambda *a,**k: None
 
@@ -29,11 +31,11 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser("Develop")
     p.add_argument("FEATS",
             action="store", help="Feats file")
-    p.add_argument("IDS",
-            action="store", help="IDs file")
-    p.add_argument("--estimators",
-        action="store", dest="estimators",default=100,type=int,
-        help="Define el valor para n_estimators")
+    p.add_argument("PROBS",
+            action="store", help="Problems id file")
+    p.add_argument("--model",default="model.data",type=str,
+            action="store", dest="model",
+            help="Maximum depth of random forest [model.dat]")
     p.add_argument("--processors",default=1,type=int,
             action="store", dest="nprocessors",
             help="Number of processors [1]")
@@ -49,6 +51,7 @@ if __name__ == "__main__":
     # prepara función de verbose
     if opts.verbose:
         def verbose(*args,**kargs):
+            kargs['file']=sys.stderr
             print(*args,**kargs)
     
     # Collecting features files ------------------------------------------
@@ -56,46 +59,29 @@ if __name__ == "__main__":
     n=0
     verbose('Loading vectors')
     feats=np.load(opts.FEATS)
-    ids_=np.load(opts.IDS)
+    verbose('Loading problems')
+    probs=np.load(opts.PROBS)
 
-    le = preprocessing.LabelEncoder()
-    le.fit(ids_)
-    verbose("Total classes",le.classes_.shape[0])
-    ids=le.transform(ids_)
 
-    from sklearn.utils import shuffle
+    verbose('Loading label encoder')
+    le = joblib.load(os.path.join(opts.model,"le.idx"))
+    verbose('Loading model')
+    classifier= joblib.load(os.path.join(opts.model,"model"))
 
-    feats,ids=shuffle(feats,ids)
-
-    X_train, X_test, y_train, y_test=\
-        train_test_split(feats, ids, test_size=0.20,
-        random_state=42) 
-   
-    verbose('Datos entrenamientp:',X_train.shape)
-    verbose('Etiquetas:',y_train.shape)
-    verbose('Datos prueva:',X_test.shape)
-
-    verbose("Training")
-    classifier=RandomForestClassifier(
-            n_estimators=opts.estimators,
-            n_jobs=opts.nprocessors,
-            max_depth=opts.max_depth,
-            verbose=True)
-
-    # Aprendiendo
-    classifier.fit(X_train, y_train)
+  
+    X_test = feats
 
     # Prediciendo
     verbose("Prediction")
-    prediction = classifier.predict(X_test)
+    prediction = classifier.predict_proba(X_test)
 
-    print( 'Accuracy              :', accuracy_score(y_test, prediction))
-    print( 'Precision             :', precision_score(y_test, prediction))
-    print( 'Recall                :', recall_score(y_test, prediction))
-    print( 'F-score               :', f1_score(y_test, prediction))
-    print( '\nClasification report:\n', classification_report(y_test,
-            prediction))
-    cm=confusion_matrix(y_test, prediction)
-    #print( '\nConfussion matrix   :\n',cm)
-    #for x in cm:
-    #    print(x)
+    for pid,row in zip(probs,prediction):
+        pid=pid[2:]
+        idxs=np.argsort(row)
+        final=row[idxs[-5:]]
+        label=le.inverse_transform(idxs[-5:])
+        for e,(a,b) in enumerate(zip(label,final)):
+            print(";".join([pid,a,str(5-e),str(b)]))
+
+
+

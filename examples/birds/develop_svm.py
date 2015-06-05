@@ -16,7 +16,7 @@ from sklearn.utils.extmath import fast_dot
 
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import train_test_split
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, f1_score
 from sklearn import preprocessing
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     p.add_argument("--processors",default=1,type=int,
             action="store", dest="nprocessors",
             help="Number of processors [1]")
-    p.add_argument("--max_depth",default=None,type=int,
+    p.add_argument("--max_depth",default=20,type=int,
             action="store", dest="max_depth",
             help="Maximum depth of random forest [20]")
     p.add_argument("-v", "--verbose",
@@ -76,10 +76,11 @@ if __name__ == "__main__":
     verbose('Datos prueva:',X_test.shape)
 
     verbose("Training")
-    classifier=RandomForestClassifier(
-            n_estimators=opts.estimators,
-            n_jobs=opts.nprocessors,
-            max_depth=opts.max_depth,
+    classifier=SVC(
+            kernel="linear",
+            tol=0.0000001,
+            gamma=0.0001,
+            C=500,
             verbose=True)
 
     # Aprendiendo

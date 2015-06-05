@@ -12,14 +12,14 @@ from __future__ import print_function
 # System libraries
 import argparse
 import numpy as np
-from sklearn.utils.extmath import fast_dot
 
-from sklearn.metrics import accuracy_score
-from sklearn.cross_validation import train_test_split
+from sklearn.externals import joblib
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, f1_score
 from sklearn import preprocessing
 
+import os.path
+import os
+import sys
 
 verbose = lambda *a,**k: None
 
@@ -37,6 +37,9 @@ if __name__ == "__main__":
     p.add_argument("--processors",default=1,type=int,
             action="store", dest="nprocessors",
             help="Number of processors [1]")
+    p.add_argument("--model",default="model.data",type=str,
+            action="store", dest="model",
+            help="Maximum depth of random forest [model.dat]")
     p.add_argument("--max_depth",default=None,type=int,
             action="store", dest="max_depth",
             help="Maximum depth of random forest [20]")
@@ -63,17 +66,27 @@ if __name__ == "__main__":
     verbose("Total classes",le.classes_.shape[0])
     ids=le.transform(ids_)
 
+    verbose("Saving ids transformer")
+   
+
+    if not os.path.exists(opts.model):
+        os.mkdir(opts.model)
+    else:
+        if not os.path.isdir(opts.model):
+            print('Not a directory for model')
+            sys.exit(1)
+
+    joblib.dump(le, os.path.join(opts.model,"le.idx"))
+    
+
     from sklearn.utils import shuffle
 
     feats,ids=shuffle(feats,ids)
 
-    X_train, X_test, y_train, y_test=\
-        train_test_split(feats, ids, test_size=0.20,
-        random_state=42) 
+    X_train, y_train=feats, ids
    
     verbose('Datos entrenamientp:',X_train.shape)
     verbose('Etiquetas:',y_train.shape)
-    verbose('Datos prueva:',X_test.shape)
 
     verbose("Training")
     classifier=RandomForestClassifier(
@@ -85,17 +98,5 @@ if __name__ == "__main__":
     # Aprendiendo
     classifier.fit(X_train, y_train)
 
-    # Prediciendo
-    verbose("Prediction")
-    prediction = classifier.predict(X_test)
-
-    print( 'Accuracy              :', accuracy_score(y_test, prediction))
-    print( 'Precision             :', precision_score(y_test, prediction))
-    print( 'Recall                :', recall_score(y_test, prediction))
-    print( 'F-score               :', f1_score(y_test, prediction))
-    print( '\nClasification report:\n', classification_report(y_test,
-            prediction))
-    cm=confusion_matrix(y_test, prediction)
-    #print( '\nConfussion matrix   :\n',cm)
-    #for x in cm:
-    #    print(x)
+    # Guarda los indices por renglones de la matrix (usuario o tweet, usuario)
+    joblib.dump(classifier, os.path.join(opts.model,"model"))

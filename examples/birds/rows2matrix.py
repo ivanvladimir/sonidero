@@ -62,6 +62,7 @@ if __name__ == "__main__":
     ids=load(os.path.join(opts.FEATSDIR,'ids.npy'))
     ids_=dict(ids)
     ids=[]
+    probs=[]
 
     # Collecting features files ------------------------------------------
     first=True
@@ -76,6 +77,8 @@ if __name__ == "__main__":
                 verbose('.',end="")
             n+=1
             ids.append(ids_[os.path.basename(filename)[:-4]])
+            bits=os.path.basename(filename)[:-4].split('_')
+            probs.append(bits[-1])
             row=load(os.path.join(root,filename))
             if first:
                 data=row
@@ -85,6 +88,7 @@ if __name__ == "__main__":
         verbose('')
     save(opts.OUTFILE+"_feats",data)
     save(opts.OUTFILE+"_ids",ids)
+    save(opts.OUTFILE+"_probs",probs)
             
             
 
