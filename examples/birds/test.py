@@ -21,7 +21,7 @@ from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics.metrics import precision_score, recall_score, confusion_matrix, classification_report, f1_score
 from sklearn import preprocessing
-
+import sys
 
 verbose = lambda *a,**k: None
 
@@ -51,6 +51,7 @@ if __name__ == "__main__":
     # prepara función de verbose
     if opts.verbose:
         def verbose(*args,**kargs):
+            kargs['file']=sys.stderr
             print(*args,**kargs)
     
     # Collecting features files ------------------------------------------
@@ -80,6 +81,7 @@ if __name__ == "__main__":
         final=row[idxs[-5:]]
         label=le.inverse_transform(idxs[-5:])
         for e,(a,b) in enumerate(zip(label,final)):
-            print(",".join([pid,a,str(e),str(b)]))
+            print(";".join([pid,a,str(5-e),str(b)]))
+
 
 
