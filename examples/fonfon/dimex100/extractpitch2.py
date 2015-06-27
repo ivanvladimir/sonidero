@@ -13,8 +13,8 @@ import argparse
 import sys
 import os.path
 from multiprocessing import Pool
-import scikits.audiolab as audiolab
-from essentia.standard import *
+import praatUtil 
+import numpy as np
 
 
 # Local import
@@ -23,27 +23,7 @@ sys.path.append(parent)
 
 verbose = lambda *a: None
 
-w = Windowing(type = 'hann')
-spectrum  = Spectrum()
-pitch = PitchYinFFT(frameSize=1024)
-
-def extract_pitch(wavname):
-    verbose('Openning ',wavname)
-    sound=audiolab.sndfile(wavname,'read')
-    audio=sound.read_frames(sound.get_nframes())
-    ps=[]
-    for frame in FrameGenerator(essentia.array(audio), frameSize = 1024, hopSize = 210):
-        fspectrum=spectrum(w(frame))
-        p,c=pitch(fspectrum)
-        if c >= 0.1:
-            ps.append(p)
-        else:
-            ps.append(0)
-    return ps
-
-
-
-def load_labeling(filename):
+def load_labeling(filename,label):
     c=0
     aes=[]
     for line in open(filename):
@@ -51,25 +31,46 @@ def load_labeling(filename):
         if c<3:
             continue
         line=line.strip().split()
-        if line[2]=='u':
-            aes.append((float(line[0]),float(line[1])))
+        try:
+            if line[2]==label:
+                aes.append((float(line[0]),float(line[1])))
+        except IndexError:
+            pass
     return aes
     
-def process_file(filename,labdir):
+def process_file(filename,labdir,label):
     fn=os.path.basename(filename)
     if not os.path.exists(os.path.join(labdir,fn[:-4]+".phn")):
         return (filename,[])
-    verbose('Extracting pitch from',filename)
-    ps=extract_pitch(filename)
+    verbose('Extracting formatns from',filename)
+    ps=praatUtil.calculateF0(filename)
     verbose('Extracting pitch aes',os.path.join(labdir,fn[:-4]+".phn"))
-    aes=load_labeling(os.path.join(labdir,fn[:-4]+".phn"))
-    p_aes=[]
-    for ini,fin in aes:
-        i_x=int(ini*210/1000)
-        f_x=int(fin*210/1000)
-        seg=ps[i_x:f_x]
-        p_aes.append(seg[(len(seg)/2)])
-    return (filename,p_aes)
+    aes=load_labeling(os.path.join(labdir,fn[:-4]+".phn"),label)
+    if len(aes)==0:
+        return (filename,[])
+    seg=0
+    ini=aes[seg][0]/1000
+    fin=aes[seg][1]/1000
+    state=0
+    formants=[]
+    for i in range(len(ps[0])):
+        time=ps[0][i]
+        fs=ps[1][i]
+        if state==0 and time>ini:
+            state=1
+            formants.append([])
+            formants[-1].append(fs)
+        if state==1 and time<fin:
+            formants[-1].append(fs)
+        elif state==1 and time>fin:
+            state=0
+            seg+=1
+            if seg>=len(aes):
+                break
+            ini=aes[seg][0]/1000
+            fin=aes[seg][1]/1000
+
+    return (filename,formants)
 
 def process_file_(args):
     return process_file(*args)
@@ -81,8 +82,9 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser("Feature extaction from wav files")
     p.add_argument("WAVDIR",default="wav",
             action="store", help="Directory with wav files")
-    p.add_argument("LABDIR",default="lab",
-            action="store", help="Directory with segmentation files")
+    p.add_argument("--label",default="a",type=str,
+            action="store", dest="label",
+            help="Label to extract statistics from [a]")
     p.add_argument("--processors",default=1,type=int,
             action="store", dest="nprocessors",
             help="Number of processors [1]")
@@ -97,16 +99,19 @@ if __name__ == "__main__":
         def verbose(*args,**kargs):
             print(*args,**kargs)
 
+    opts.LABDIR=opts.WAVDIR+"/T22/individuales/"
+    opts.WAVDIR=opts.WAVDIR+"/audio_editado/individuales/"
+
     # Process if only one ------------------------------------------------
     if not os.path.isdir(opts.WAVDIR):
-        idd=process_file(opts.WAVDIR,opts.LABDIR)
+        idd=process_file(opts.WAVDIR,opts.LABDIR,opts.label)
         sys.exit(0)
         
     # Preparing processors -----------------------------------------------
     pool =  Pool(processes=opts.nprocessors)
     # Traverse xml files -------------------------------------------------
     for root, dirs, files in os.walk(opts.WAVDIR):
-        args=[ (os.path.join(root,file),opts.LABDIR) 
+        args=[ (os.path.join(root,file),opts.LABDIR,opts.label) 
                 for file in files
                     if file.endswith('.wav')]
         verbose('Processing',len(args),'files from',root)
@@ -114,8 +119,14 @@ if __name__ == "__main__":
             idds=pool.map(process_file_,args)
         else:
             idds=map(process_file_,args)
-
-    print(idds)
+    
+    f0=[]
+    for filename, formants in idds:
+        for fs in formants:
+            if len(fs)>3:
+                f0.extend(fs)
+    print(opts.WAVDIR)
+    print("F0",np.mean(f0))
 
             
 

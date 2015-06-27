@@ -1,0 +1,4 @@
+corpora:
+    dimex100: 
+        contexts: data/contexts.txt
+        

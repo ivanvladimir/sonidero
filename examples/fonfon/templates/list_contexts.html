@@ -1,0 +1,50 @@
+{% extends "default.html" %}
+
+{% block title %}Lista de contextos fonéticos {% endblock %}
+
+{% block content %}
+
+<h2>
+Lista de contextos en {{ corpusname }}
+</h2>
+	
+<div class="row">
+    <div class="large-12 columns">
+		<table>
+		<thead>
+			<td> Num </td>
+			<td> Prev </td>
+			<td> Fonema vocálico </td>
+			<td> Proporción </td>
+			<td> Frecuencia </td>
+			<td> Hablantes </td>
+		</thead>
+		<tbody>
+		{% set c = 1 %}
+		{% for prev, curr, val, spk in contexts %}
+			<tr>
+			 <td>{{c}}</td>
+			 <td><em>{{prev}}</em></td> <td><strong> {{curr}}</strong></td> 
+			 <td width="85%">
+			 {% if spk >= ignore %}
+			 <div class="progress round success">
+			 {%else %}
+		 	 <div class="progress round alert">
+			{% endif %}
+	   		 <span class="meter" style="width: {{val/maximum*100}}%"></span>
+			 </div>
+			 </td>
+			 <td>{{val}}</td>
+			 <td>{{spk}}</td>
+			</tr>
+			{% set c=c+1 %}
+		{% endfor %}
+		</tbody>
+		</table>
+	</div>
+</div>
+
+
+{%endblock%}
+
+

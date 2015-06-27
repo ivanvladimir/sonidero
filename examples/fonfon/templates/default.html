@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html lang="{{lang}}"  ng-app="experimentApp">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="description" content="Experiments in phonetic/phonolic forense"/>
+    <meta name="generator" content="Flask"/>
+    <meta name="robots"    content="all" />
+    <meta name="keywords"  content="Ivan Meza"/>
+    <meta name="copyright" content='2015 Ivan Vladimir Meza Ruiz'/>
+    <meta name="author"    content="Ivan Vladimir Meza Ruiz"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/css/foundation.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-rc.0/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-rc.0/angular-cookies.js"></script>
+			
+    {% block scripts %}{% endblock %}
+    <title>{% block title %}{% endblock %} Panel de control  </title>
+
+</head>
+
+
+<body>
+
+	<nav class="top-bar" data-topbar>
+	<ul class="title-area">
+      <li class="name">
+        <h1>
+          <a href="#">
+            Experimentos fonología forense
+          </a>
+        </h1>
+      </li>
+    </ul>
+	</nav>
+ 
+<div class="row">
+<div class="large-12 columns">
+
+{% block content %}{% endblock %}
+
+</div>
+</div>
+
+   <footer class="row">
+    <div class="large-12 columns">
+      <hr/>
+      <div class="row">
+        <div class="large-6 columns">
+          <p>© Copyright 2015 Ivan Vladimir Meza Ruiz </p>
+        </div>
+        <div class="large-6 columns">
+          <ul class="inline-list right">
+            <li><a href="http://ivanvladimir.github.io">Homepage</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/js/vendor/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/js/foundation.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/js/vendor/modernizr.js"></script>
+    <script>
+	    $(document).foundation({bindings: 'events'});
+	</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends "default.html" %}
+
+{% block title %}Índice principal {% endblock %}
+
+{% block content %}
+
+<div class="row">
+	<div class="large-8 columns">
+	<h2>
+	Indices de opciones
+	</h2>
+
+
+	<ul>
+		<li><a href="{{url_for(".list_contexts",corpus='dimex100')}}">Lista de contextos para DIMEx100</a></li>
+	</ul>
+	</div>
+</div>
+
+
+{%endblock%}
+
+
