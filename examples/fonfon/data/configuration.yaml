@@ -1,4 +1,155 @@
 corpora:
-    dimex100: 
-        contexts: data/contexts.txt
-        
+    dimex100:
+        gender:
+            data/dimex100gender.txt 
+        context_info: 
+            F0:
+                data/f0_middlepoint.pck
+            F1:
+                data/dimex100_f1.pck
+            F2:
+                data/dimex100_f2.pck
+            F3:
+                data/dimex100_f3.pck
+            F4:
+                data/dimex100_f4.pck
+        test_info:
+            F0:
+                data/f0_middlepoint_test.pck
+            F1:
+                data/dimex100_f1_test.pck
+            F2:
+                data/dimex100_f2_test.pck
+            F3:
+                data/dimex100_f3_test.pck
+            F4:
+                data/dimex100_f4_test.pck
+    dimex100nasal:
+        gender:
+            data/dimex100gender.txt 
+        context_info: 
+            F0:
+                data/f0_middlepoint_nasal.pck
+            F1:
+                data/dimex100_f1_nasal.pck
+            F2:
+                data/dimex100_f2_nasal.pck
+            F3:
+                data/dimex100_f3_nasal.pck
+            F4:
+                data/dimex100_f4_nasal.pck
+        test_info:
+            F0:
+                data/f0_middlepoint_test.pck
+            F1:
+                data/dimex100_f1_test.pck
+            F2:
+                data/dimex100_f2_test.pck
+            F3:
+                data/dimex100_f3_test.pck
+            F4:
+                data/dimex100_f4_test.pck
+    dimex100promnasal:
+        gender:
+            data/dimex100gender.txt 
+        context_info: 
+            F0:
+                data/f0_prom_nasal.pck
+            F1:
+                data/dimex100_f1_prom_nasal.pck
+            F2:
+                data/dimex100_f2_prom_nasal.pck
+            F3:
+                data/dimex100_f3_prom_nasal.pck
+            F4:
+                data/dimex100_f4_prom_nasal.pck
+        test_info:
+            F0:
+                data/f0_middlepoint_test.pck
+            F1:
+                data/dimex100_f1_test.pck
+            F2:
+                data/dimex100_f2_test.pck
+            F3:
+                data/dimex100_f3_test.pck
+            F4:
+                data/dimex100_f4_test.pck
+ 
+    dimex100entpromnasal:
+        gender:
+            data/dimex100gender.txt 
+        context_info: 
+            F0:
+                data/f0_ent_prom_nasal.pck
+            F1:
+                data/dimex100_f1_ent_prom_nasal.pck
+            F2:
+                data/dimex100_f2_ent_prom_nasal.pck
+            F3:
+                data/dimex100_f3_ent_prom_nasal.pck
+            F4:
+                data/dimex100_f4_ent_prom_nasal.pck
+        test_info:
+            F0:
+                data/f0_middlepoint_test.pck
+            F1:
+                data/dimex100_f1_test.pck
+            F2:
+                data/dimex100_f2_test.pck
+            F3:
+                data/dimex100_f3_test.pck
+            F4:
+                data/dimex100_f4_test.pck
+ 
+    sordos:
+        gender:
+            data/sordosgender.txt 
+        context_info: 
+            F1:
+                data/sordos_f1.pck
+            F2:
+                data/sordos_f2.pck
+            F3:
+                data/sordos_f3.pck
+            F4:
+                data/sordos_f4.pck
+        test_info:
+            F1:
+                data/sordos_f1.pck
+            F2:
+                data/sordos_f2.pck
+            F3:
+                data/sordos_f3.pck
+            F4:
+                data/sordos_f4.pck
+
+indices:
+    fernanda:
+        description: Contextos seleccionados por Fernanda
+        corpus: dimex100
+        contexts: data/dimex100_fernanda_contexts.txt
+    carlos:
+        description: Contextos seleccionados por Carlos (Nasales/Punto medio)
+        corpus: dimex100nasal
+        contexts: data/dimex100_carlos_contexts.txt
+
+    carlos2:
+        description: Contextos nasales seleccionados por Carlos (Nasales/Promedios)
+        corpus: dimex100promnasal
+        contexts: data/dimex100_carlos_contexts.txt
+    carlos3:
+        description: Contextos ent seleccionados por Carlos (Nasales/Promedios)
+        corpus: dimex100entpromnasal
+        contexts: data/dimex100_carlos_ent_contexts.txt
+
+    sordos:
+        description: Índices de contextos fonéticos
+        corpus: sordos
+        contexts: data/sordos_contexts.txt
+   
+
+    full:
+        description: Índices de todo el corpus dimex100 adultos
+        corpus: dimex100
+        contexts: data/dimex100_contexts.txt
+   

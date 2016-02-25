@@ -18,6 +18,9 @@ Lista de contextos en {{ corpusname }}
 			<td> Proporción </td>
 			<td> Frecuencia </td>
 			<td> Hablantes </td>
+			{% for met in mets %}
+				<td> {{met}} </td>
+			{% endfor %}
 		</thead>
 		<tbody>
 		{% set c = 1 %}
@@ -36,6 +39,11 @@ Lista de contextos en {{ corpusname }}
 			 </td>
 			 <td>{{val}}</td>
 			 <td>{{spk}}</td>
+			 {% for met in mets %}
+			 <td><a href="{{url_for('detail_corpus',corpus=corpusname,met=met,spk_gen='F',prev=prev,curr=curr)}}">F</a>/
+			 <a href="{{url_for('detail_corpus',corpus=corpusname,met=met,spk_gen='M',prev=prev,curr=curr)}}">M</a></td>
+			 {% endfor %}
+
 			</tr>
 			{% set c=c+1 %}
 		{% endfor %}

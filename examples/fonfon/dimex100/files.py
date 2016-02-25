@@ -45,11 +45,20 @@ def get_files(dir="corpus",type="T22",set="all",ext='phn'):
                 for file in files if file.endswith(ext)])
     return files_
 
+def get_wavname(filename):
+    h,t=os.path.split(filename)
+    t=t.replace(".phn",".wav") 
+    h=h.replace("T22","audio_editado") 
+    h=h.replace("T44","audio_editado") 
+    h=h.replace("T54","audio_editado") 
+    return os.path.join(h,t)
+
+
 re_speakerid=re.compile('/(s\d\d\d)/')
 def get_speaker(filename):
     m=re_speakerid.search(filename)
     if m:
-        return m.groups(0)
+        return m.groups(0)[0]
     else:
         return 'unknown'
 

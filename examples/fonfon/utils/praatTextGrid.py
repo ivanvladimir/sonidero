@@ -164,9 +164,9 @@ class PraatTextGrid:
 				
 		
 	def readFromFile(self, fileName):
-		#import codecs
-		#f = codecs.open(fileName, 'r', encoding='utf-16')
-		f = open(fileName, 'r')
+		import codecs
+		f = codecs.open(fileName, 'r', encoding='utf-16')
+		#f = open(fileName, 'r')
 		cnt = 0
 		errMsg = 'PraatTextGrid::readFromFile(' + fileName + ') - '
 		isShortTextFile = False

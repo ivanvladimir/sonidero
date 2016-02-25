@@ -10,10 +10,11 @@
 	Indices de opciones
 	</h2>
 
-
+	{% for index in info %}
 	<ul>
-		<li><a href="{{url_for(".list_contexts",corpus='dimex100')}}">Lista de contextos para DIMEx100</a></li>
+		<li><a href="{{url_for(".list_contexts",index=index)}}">{{info[index]['description']}}</a></li>
 	</ul>
+	{% endfor %}
 	</div>
 </div>
 
